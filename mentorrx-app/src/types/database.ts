@@ -472,6 +472,62 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["calendar_sync"]["Insert"]>;
         Relationships: [];
       };
+      payouts: {
+        Row: {
+          id: string;
+          mentor_id: string;
+          amount: number;
+          currency: string;
+          status: "pending" | "processing" | "completed" | "failed";
+          payout_method: string;
+          reference_id: string | null;
+          requested_at: string;
+          processed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          mentor_id: string;
+          amount: number;
+          currency: string;
+          status?: "pending" | "processing" | "completed" | "failed";
+          payout_method: string;
+          reference_id?: string | null;
+          requested_at?: string;
+          processed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["payouts"]["Insert"]>;
+        Relationships: [];
+      };
+      availability_exceptions: {
+        Row: {
+          id: string;
+          mentor_id: string;
+          exception_date: string;
+          is_available: boolean;
+          start_time: string | null;
+          end_time: string | null;
+          reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          mentor_id: string;
+          exception_date: string;
+          is_available?: boolean;
+          start_time?: string | null;
+          end_time?: string | null;
+          reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["availability_exceptions"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: {
       mentor_profiles: {
