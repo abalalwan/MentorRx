@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
+import { useRealtimeNotifications } from "@/lib/hooks/use-realtime-notifications";
 import { getInitials } from "@/lib/utils";
 import type { Profile } from "@/types/database";
 
@@ -20,13 +20,17 @@ interface HeaderProps {
   unreadCount?: number;
 }
 
-export function Header({ profile, unreadCount = 0 }: HeaderProps) {
+export function Header({ profile, unreadCount: staticUnreadCount = 0 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+
+  // Real-time unread notification count — falls back to staticUnreadCount during SSR
+  const { unreadCount: liveUnreadCount } = useRealtimeNotifications(profile?.id ?? null);
+  const unreadCount = profile ? liveUnreadCount || staticUnreadCount : staticUnreadCount;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);

@@ -23,7 +23,7 @@ export default async function NotificationsPage() {
 
   const { data: notifications } = await supabase
     .from("notifications")
-    .select("id, type, title, message, data, is_read, created_at")
+    .select("id, type, title, body, data, is_read, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(50);
@@ -32,7 +32,7 @@ export default async function NotificationsPage() {
     id: string;
     type: string;
     title: string;
-    message: string;
+    body: string;
     data: Record<string, unknown> | null;
     is_read: boolean;
     created_at: string;

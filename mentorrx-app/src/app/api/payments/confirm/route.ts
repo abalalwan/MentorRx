@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getPaymentProvider } from "@/lib/payments";
 import { getVideoProvider } from "@/lib/video";
+import { sendBookingConfirmedMentee, sendNewBookingMentor } from "@/lib/email";
 import type { Database } from "@/types/database";
 
 type BookingRow = Pick<
@@ -171,6 +172,53 @@ export async function POST(req: NextRequest) {
       data: { booking_id: bookingId },
     },
   ]);
+
+  // Send confirmation emails (fire-and-forget — don't block the response)
+  const sessionDateStr = new Date(booking.start_time).toLocaleDateString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  });
+  const sessionTimeStr = new Date(booking.start_time).toLocaleTimeString("en-US", {
+    hour: "2-digit", minute: "2-digit",
+  });
+  const amountStr = `${booking.currency.toUpperCase()} ${(booking.amount / 100).toFixed(2)}`;
+
+  // Fetch meeting URL if created
+  let meetingUrlForEmail: string | null = null;
+  if (meetingId) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: meetingRow } = await (supabase.from("meetings") as any)
+      .select("meeting_url")
+      .eq("id", meetingId)
+      .single();
+    meetingUrlForEmail = meetingRow?.meeting_url ?? null;
+  }
+
+  if (menteeProfile?.email) {
+    sendBookingConfirmedMentee({
+      to: menteeProfile.email,
+      menteeName: menteeProfile.full_name || "there",
+      mentorName: mentorProfile?.full_name || "your mentor",
+      sessionDate: sessionDateStr,
+      startTime: sessionTimeStr,
+      durationMinutes: booking.duration_minutes,
+      amount: amountStr,
+      meetingUrl: meetingUrlForEmail,
+      bookingId: bookingId,
+    }).catch((e) => console.error("[Email] Mentee confirmation failed:", e));
+  }
+
+  if (mentorProfile?.email) {
+    sendNewBookingMentor({
+      to: mentorProfile.email,
+      mentorName: mentorProfile.full_name || "there",
+      menteeName: menteeProfile?.full_name || "a mentee",
+      sessionDate: sessionDateStr,
+      startTime: sessionTimeStr,
+      durationMinutes: booking.duration_minutes,
+      amount: amountStr,
+      bookingId: bookingId,
+    }).catch((e) => console.error("[Email] Mentor notification failed:", e));
+  }
 
   return NextResponse.json({ success: true, bookingId });
 }

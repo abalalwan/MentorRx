@@ -13,7 +13,7 @@ type NotifRow = {
   id: string;
   type: string;
   title: string;
-  message: string;
+  body: string;
   data: Record<string, unknown> | null;
   is_read: boolean;
   created_at: string;
@@ -129,7 +129,7 @@ export function NotificationsView({
                               {notif.title}
                             </p>
                             <p className="text-sm text-[var(--muted-foreground)] mt-0.5 line-clamp-2">
-                              {notif.message}
+                              {notif.body}
                             </p>
                             <p className="text-xs text-[var(--muted-foreground)] mt-1">
                               {formatDate(notif.created_at)}
