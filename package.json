@@ -1,0 +1,10 @@
+{
+  "name": "mentorrx",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd mentorrx-app && npm run dev",
+    "build": "cd mentorrx-app && npm ci --prefer-offline && npm run build",
+    "start": "cd mentorrx-app && npm run start"
+  }
+}

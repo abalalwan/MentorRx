@@ -1,6 +1,4 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd mentorrx-app && npm run build",
-  "installCommand": "cd mentorrx-app && npm ci",
   "outputDirectory": "mentorrx-app/.next"
 }
