@@ -1,7 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.EMAIL_FROM || "noreply@mentorrx.com";
+
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY ?? "");
+}
 
 export interface EmailResult {
   success: boolean;
@@ -26,7 +29,7 @@ export async function sendEmail({
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM,
       to: Array.isArray(to) ? to : [to],
       subject,
