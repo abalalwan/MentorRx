@@ -3,61 +3,25 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Sarah Al-Rashid",
-    role: "MSL at Roche",
-    rating: 5,
-    text: "My mentor helped me land my first MSL role in just 3 months. The career guidance was incredibly specific and actionable. Worth every penny.",
-    country: "Saudi Arabia",
-  },
-  {
-    id: 2,
-    name: "Ahmed Hassan",
-    role: "Medical Affairs Manager",
-    rating: 5,
-    text: "I transitioned from clinical practice to pharma with my mentor's help. They knew exactly what skills I needed to develop and how to position my experience.",
-    country: "Egypt",
-  },
-  {
-    id: 3,
-    name: "Fatima Al-Zaabi",
-    role: "Regulatory Affairs Specialist",
-    rating: 5,
-    text: "The mock interviews and CV review sessions transformed my application process. Got three offers within a month of starting mentorship.",
-    country: "UAE",
-  },
-  {
-    id: 4,
-    name: "Omar Khalil",
-    role: "Market Access Director",
-    rating: 5,
-    text: "Found an incredible mentor with 20 years in Market Access. Their insights on HEOR and payer negotiations were exactly what I needed for my promotion.",
-    country: "Jordan",
-  },
-  {
-    id: 5,
-    name: "Lina Nasser",
-    role: "Clinical Research Associate",
-    rating: 5,
-    text: "The platform is seamless. Booking, payment, and the video call all worked perfectly. My mentor was exactly as described in their profile.",
-    country: "Lebanon",
-  },
-  {
-    id: 6,
-    name: "Yusuf Al-Ghamdi",
-    role: "Pharmacovigilance Manager",
-    rating: 5,
-    text: "As a mentor, the platform handles everything. I just show up and share my knowledge. The earnings are fair and payments are always on time.",
-    country: "Saudi Arabia",
-  },
-];
+interface TestimonialsProps {
+  testimonials: Array<{
+    id: string;
+    rating: number;
+    comment: string | null;
+    profiles?: {
+      full_name: string | null;
+      avatar_url: string | null;
+      country: string | null;
+    } | null;
+  }>;
+}
 
-export function Testimonials() {
+export function Testimonials({ testimonials }: TestimonialsProps) {
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,7 +37,7 @@ export function Testimonials() {
             Trusted by Professionals Across the Region
           </h2>
           <p className="text-[var(--muted-foreground)] mt-2">
-            Join thousands who have accelerated their careers with MentorRx
+            Real reviews from mentees who booked sessions on MentorRx
           </p>
         </motion.div>
 
@@ -96,18 +60,21 @@ export function Testimonials() {
               </div>
 
               <p className="text-sm text-[var(--foreground)] leading-relaxed mb-6">
-                {`"${t.text}"`}
+                {`"${t.comment}"`}
               </p>
 
               <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9">
+                  <AvatarImage src={t.profiles?.avatar_url || undefined} />
                   <AvatarFallback className="text-xs">
-                    {getInitials(t.name)}
+                    {getInitials(t.profiles?.full_name || "Anonymous")}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">{t.role} · {t.country}</p>
+                  <p className="text-sm font-semibold">{t.profiles?.full_name || "Anonymous"}</p>
+                  {t.profiles?.country && (
+                    <p className="text-xs text-[var(--muted-foreground)]">{t.profiles.country}</p>
+                  )}
                 </div>
               </div>
             </motion.div>
