@@ -52,6 +52,18 @@ export default async function HomePage() {
     .order("name")
     .limit(12);
 
+  const { data: testimonials } = await supabase
+    .from("reviews")
+    .select(`
+      id, rating, comment,
+      profiles:mentee_id(full_name, avatar_url, country)
+    `)
+    .eq("is_public", true)
+    .gte("rating", 4)
+    .not("comment", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header profile={profile} unreadCount={unreadCount} />
@@ -60,7 +72,7 @@ export default async function HomePage() {
         <FeaturedMentors mentors={featuredMentors || []} />
         <TopSpecialties specialties={specialties || []} />
         <HowItWorks />
-        <Testimonials />
+        <Testimonials testimonials={testimonials || []} />
         <PricingSection />
         <FaqSection />
       </main>
